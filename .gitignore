@@ -27,3 +27,8 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+### NPM Project ###
+src/main/resources/web-app/node_modules/**
+src/main/resources/web-app/package-lock.json
+src/main/resources/web-app/app/lib/
