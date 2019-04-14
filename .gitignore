@@ -32,3 +32,6 @@ HELP.md
 src/main/resources/web-app/node_modules/**
 src/main/resources/web-app/package-lock.json
 src/main/resources/web-app/app/lib/
+
+### DB Credentials ##
+src/main/resources/database.properties
