@@ -37,7 +37,7 @@ function stylesheets() { // combines all the css into one file
 gulp.task('stylesheets', stylesheets);
 
 function watch() {
-    gulp.watch(paths.scripts.src, gulp.series(['scripts', 'bundle']));
+    gulp.watch(paths.scripts.src, 'scripts');
     gulp.watch(paths.css.src, stylesheets);
 }
 
@@ -45,4 +45,4 @@ gulp.task('watch', watch);
 
 gulp.task('build', gulp.parallel(['scripts', 'stylesheets']));
 
-gulp.task('default',gulp.series('build'));
+gulp.task('default', gulp.series('build'));
