@@ -37,7 +37,7 @@ function stylesheets() { // combines all the css into one file
 gulp.task('stylesheets', stylesheets);
 
 function watch() {
-    gulp.watch(paths.scripts.src, 'scripts');
+    gulp.watch(paths.scripts.src, scripts);
     gulp.watch(paths.css.src, stylesheets);
 }
 
