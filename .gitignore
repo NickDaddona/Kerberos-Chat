@@ -33,5 +33,8 @@ src/main/resources/web-app/node_modules/**
 src/main/resources/web-app/package-lock.json
 src/main/resources/web-app/app/lib/
 
+### Gulp Output###
+src/main/resources/web-app/app/dist/
+
 ### DB Credentials ##
 src/main/resources/database.properties
