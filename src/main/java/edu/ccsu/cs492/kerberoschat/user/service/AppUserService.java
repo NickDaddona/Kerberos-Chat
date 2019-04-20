@@ -33,6 +33,6 @@ public class AppUserService {
      */
     public AppUser getUser(String userName) throws AppUserNotFoundException {
         Optional<AppUser> appUserOptional = appUserRepository.findById(userName);
-        return appUserOptional.orElseThrow(() -> new AppUserNotFoundException("User with username " + userName + " not found"));
+        return appUserOptional.orElseThrow(() -> new AppUserNotFoundException("User with username \"" + userName + "\" not found"));
     }
 }

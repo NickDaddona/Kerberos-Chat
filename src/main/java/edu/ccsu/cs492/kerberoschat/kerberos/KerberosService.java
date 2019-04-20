@@ -23,6 +23,6 @@ public class KerberosService {
      */
     public String getUserSalt(String userName) throws AppUserNotFoundException {
         AppUser user = appUserService.getUser(userName);
-        return user.getPassword().substring(0, 15);
+        return user.getPassword().substring(0, 16); // first 16 hex characters of hash are the salt
     }
 }
