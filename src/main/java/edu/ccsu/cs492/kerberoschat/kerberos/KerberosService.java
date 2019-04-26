@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 @Service
 public class KerberosService {
@@ -44,5 +45,18 @@ public class KerberosService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Determines if a timestamp sent by a user is valid, that is the time specified has passed, but the current time is
+     * within five minutes of the timestamp
+     *
+     * @param timestamp the timestamp that's being checked
+     * @return true if the timestamp is valid, false otherwise
+     */
+    public boolean isTimestampValid(Date timestamp) {
+        int fiveMinutes = 300000; // five minutes in milliseconds
+        Date systemTimestamp = new Date();
+        return systemTimestamp.getTime() > timestamp.getTime() + fiveMinutes || systemTimestamp.getTime() < timestamp.getTime();
     }
 }
