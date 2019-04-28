@@ -1,5 +1,6 @@
 package edu.ccsu.cs492.kerberoschat.kerberos;
 
+import edu.ccsu.cs492.kerberoschat.kerberos.ticket.TicketGrantingTicket;
 import edu.ccsu.cs492.kerberoschat.user.entity.AppUser;
 import edu.ccsu.cs492.kerberoschat.user.exception.AppUserNotFoundException;
 import edu.ccsu.cs492.kerberoschat.user.service.AppUserService;
@@ -15,9 +16,15 @@ import java.util.Date;
 public class KerberosService {
     private final AppUserService appUserService;
 
+    /**
+     * Duration Tickets will last in milliseconds
+     */
+    private final long ticketDuration;
+
     @Autowired
     public KerberosService(AppUserService appUserService) {
         this.appUserService = appUserService;
+        ticketDuration = 60 * 60 * 1000;
     }
 
     /**
@@ -29,6 +36,16 @@ public class KerberosService {
     public String getUserSalt(String userName) throws AppUserNotFoundException {
         AppUser user = appUserService.getUser(userName);
         return user.getPassword().substring(0, 16); // first 16 hex characters of hash are the salt
+    }
+
+    /**
+     * Creates a new TicketGrantingTicket that will allow an authenticated user to carry out operations with the KDC
+     *
+     * @param user the authenticated user who will receive the ticket
+     * @return a new ticket granting ticket for communication with the KDC
+     */
+    public TicketGrantingTicket createTGT(AppUser user) {
+        return new TicketGrantingTicket(user.getUserName(), ticketDuration, this.generateSessionKey());
     }
 
     /**
