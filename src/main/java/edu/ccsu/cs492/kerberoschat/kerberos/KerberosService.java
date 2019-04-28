@@ -21,10 +21,16 @@ public class KerberosService {
      */
     private final long ticketDuration;
 
+    /**
+     * The window a timestamp will be accepted in milliseconds
+     */
+    private final long timestampWindow;
+
     @Autowired
     public KerberosService(AppUserService appUserService) {
         this.appUserService = appUserService;
-        ticketDuration = 60 * 60 * 1000;
+        this.ticketDuration = 60 * 60 * 1000;
+        this.timestampWindow = 5 * 60 * 1000;
     }
 
     /**
@@ -72,8 +78,7 @@ public class KerberosService {
      * @return true if the timestamp is valid, false otherwise
      */
     public boolean isTimestampValid(Date timestamp) {
-        int fiveMinutes = 300000; // five minutes in milliseconds
-        Date systemTimestamp = new Date();
-        return systemTimestamp.getTime() > timestamp.getTime() + fiveMinutes || systemTimestamp.getTime() < timestamp.getTime();
+        Date currentTime = new Date();
+        return currentTime.getTime() < timestamp.getTime() + timestampWindow && timestamp.getTime() < currentTime.getTime();
     }
 }

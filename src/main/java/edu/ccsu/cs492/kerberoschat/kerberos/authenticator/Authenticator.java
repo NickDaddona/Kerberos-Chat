@@ -12,7 +12,7 @@ public class Authenticator {
     /**
      * The Name of the user that wishes to be authenticated
      */
-    private String userName;
+    private String username;
 
     /**
      * A timestamp encrypted with the hash of the user's password

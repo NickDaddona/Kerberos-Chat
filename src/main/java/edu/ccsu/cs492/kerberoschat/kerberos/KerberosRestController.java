@@ -32,13 +32,13 @@ public class KerberosRestController {
     /**
      * Obtains and returns the salt for the specified user in order to derive an encryption key for authentication
      *
-     * @param userName the name of the user that's trying to authenticate
+     * @param username the name of the user that's trying to authenticate
      * @return the salt of the user's password, if there is a user for the supplied name
      */
     @RequestMapping(value = "getSalt", method = RequestMethod.POST)
-    public ResponseEntity<String> getSalt(@RequestBody String userName) {
+    public ResponseEntity<String> getSalt(@RequestBody String username) {
         try {
-            String salt = kerberosService.getUserSalt(userName);
+            String salt = kerberosService.getUserSalt(username);
             return new ResponseEntity<>(salt, HttpStatus.OK);
         } catch (AppUserNotFoundException e) { // Bad request status returned to not indicate if there is a user for that name
             return new ResponseEntity<>("bad request", HttpStatus.BAD_REQUEST);
@@ -53,14 +53,14 @@ public class KerberosRestController {
      * @return a response containing a session authenticator if successful, a response indicating failure otherwise
      */
     @RequestMapping(value = "authenticate", method = RequestMethod.POST)
-    public ResponseEntity<String> getTimeStamp(@RequestBody Authenticator authenticator) {
+    public ResponseEntity<String> authenticateUser(@RequestBody Authenticator authenticator) {
         try {
-            AppUser user = appUserService.getUser(authenticator.getUserName());
+            AppUser user = appUserService.getUser(authenticator.getUsername());
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
-                return new ResponseEntity<>("Timestamp expired", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>("Authenticated", HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>("Authenticated", HttpStatus.OK);
+                return new ResponseEntity<>("Invalid Timestamp", HttpStatus.UNAUTHORIZED);
             }
         } catch (AppUserNotFoundException e) {
             return new ResponseEntity<>("Failure to Authenticate", HttpStatus.UNAUTHORIZED);
