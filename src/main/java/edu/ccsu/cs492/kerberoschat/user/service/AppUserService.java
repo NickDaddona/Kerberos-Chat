@@ -27,12 +27,12 @@ public class AppUserService {
     /**
      * Attempts to find a user with the supplied username in the database
      *
-     * @param userName the username that's used for searching the database
+     * @param username the username that's used for searching the database
      * @return an AppUser object containing the user's information
      * @throws AppUserNotFoundException if no user is found with the supplied username
      */
-    public AppUser getUser(String userName) throws AppUserNotFoundException {
-        Optional<AppUser> appUserOptional = appUserRepository.findById(userName);
-        return appUserOptional.orElseThrow(() -> new AppUserNotFoundException("User with username \"" + userName + "\" not found"));
+    public AppUser getUser(String username) throws AppUserNotFoundException {
+        Optional<AppUser> appUserOptional = appUserRepository.findById(username);
+        return appUserOptional.orElseThrow(() -> new AppUserNotFoundException("User with username \"" + username + "\" not found"));
     }
 }

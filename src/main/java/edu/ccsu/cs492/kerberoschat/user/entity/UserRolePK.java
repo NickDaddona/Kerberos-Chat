@@ -15,7 +15,7 @@ public class UserRolePK implements Serializable {
     /**
      * The username of the user
      */
-    private String userName;
+    private String username;
 
     /**
      * A role of the user
