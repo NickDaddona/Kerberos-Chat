@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class WebAppController {
 
-    @RequestMapping(value = "/",  method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public static String serveWebApp() {
         return "app/index";
     }
