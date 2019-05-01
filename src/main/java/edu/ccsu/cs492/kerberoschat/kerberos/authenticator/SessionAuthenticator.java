@@ -16,10 +16,9 @@ import javax.crypto.SecretKey;
 public class SessionAuthenticator {
 
     /**
-     * The session key the user will use to communicate with the KDC
-     * TODO: Should consider changing this to a string for interoperability with frontend
+     * The session key the user will use to communicate with the KDC encoded as a base64 string
      */
-    private SecretKey sessionKey;
+    private String sessionKey;
 
     /**
      * The ticket the user will send with every request to the KDC
