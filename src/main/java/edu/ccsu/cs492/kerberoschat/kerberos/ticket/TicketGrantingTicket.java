@@ -1,11 +1,15 @@
 package edu.ccsu.cs492.kerberoschat.kerberos.ticket;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class TicketGrantingTicket {
     /**
      * The name of the user the ticket was granted to
@@ -28,25 +32,9 @@ public class TicketGrantingTicket {
     private long duration;
 
     /**
-     * The session key for this ticket
-     * // TODO: Should consider changing this to a string to allow for easier encryption
+     * The session key for this ticket encoded as a Base64 string
      */
-    private SecretKey sessionKey;
-
-    /**
-     * Creates a new ticket granting ticket for the specified user with the specified duration
-     *
-     * @param username   the name of the user being granted the ticket
-     * @param duration   the duration in milliseconds the ticket will last
-     * @param sessionKey the key the user and the KDC will use for the session
-     */
-    public TicketGrantingTicket(String username, long duration, SecretKey sessionKey) {
-        this.username = username;
-        this.duration = duration;
-        this.timeIssued = new Date();
-        this.expiryTime = new Date(timeIssued.getTime() + duration);
-        this.sessionKey = sessionKey;
-    }
+    private String sessionKey;
 
     /**
      * Determines if the ticket is still valid
@@ -55,5 +43,63 @@ public class TicketGrantingTicket {
      */
     public boolean isValid() {
         return timeIssued.getTime() + duration < expiryTime.getTime();
+    }
+
+    @NoArgsConstructor()
+    public static class TGTBuilder {
+        private String username;
+        private Date timeIssued;
+        private Date expiryTime;
+        private long duration;
+        private String sessionKey;
+
+        public TGTBuilder addUserName(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public TGTBuilder addTimeIssued(Date timeIssued) {
+            this.timeIssued = timeIssued;
+            return this;
+        }
+
+        public TGTBuilder addExpiryTime(Date expiryTime) {
+            this.expiryTime = expiryTime;
+            return this;
+        }
+
+        public TGTBuilder addDuration(long duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public TGTBuilder addSessionKey(String base64SessionKey) {
+            this.sessionKey = base64SessionKey;
+            return this;
+        }
+
+        /**
+         * Checks to see if the builder is complete
+         *
+         * @return true if a TGT is ready to be built, false otherwise
+         */
+        public boolean isBuildComplete() {
+            return username != null && timeIssued != null && expiryTime != null && duration != 0 && sessionKey != null;
+        }
+
+        /**
+         * Builds and returns a new TicketGrantingTicket based on previously supplied data
+         *
+         * @return a new, fully build TicketGrantingTicket
+         * @throws MalformedTGTException if required TGT fields are not initialized
+         */
+        public TicketGrantingTicket getBuiltTicket() throws MalformedTGTException {
+            if (isBuildComplete()) {
+                return new TicketGrantingTicket(username, timeIssued, expiryTime, duration, sessionKey);
+            }
+            else {
+                throw new MalformedTGTException("TGT Builder Failed, required fields not initialized");
+            }
+        }
     }
 }
