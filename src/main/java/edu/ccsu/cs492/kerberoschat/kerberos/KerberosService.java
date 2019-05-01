@@ -1,5 +1,6 @@
 package edu.ccsu.cs492.kerberoschat.kerberos;
 
+import edu.ccsu.cs492.kerberoschat.kerberos.ticket.MalformedTGTException;
 import edu.ccsu.cs492.kerberoschat.kerberos.ticket.TicketGrantingTicket;
 import edu.ccsu.cs492.kerberoschat.user.entity.AppUser;
 import edu.ccsu.cs492.kerberoschat.user.exception.AppUserNotFoundException;
@@ -48,10 +49,19 @@ public class KerberosService {
      * Creates a new TicketGrantingTicket that will allow an authenticated user to carry out operations with the KDC
      *
      * @param user the authenticated user who will receive the ticket
+     * @param key  the session key as a base64 string
      * @return a new ticket granting ticket for communication with the KDC
      */
-    public TicketGrantingTicket createTGT(AppUser user) {
-        return new TicketGrantingTicket(user.getUserName(), ticketDuration, this.generateSessionKey());
+    public TicketGrantingTicket createTGT(AppUser user, String key) throws MalformedTGTException {
+        Date issueTime = new Date(); // get the current time
+        Date expiryTime = new Date(issueTime.getTime() + ticketDuration);
+        return new TicketGrantingTicket.TGTBuilder()
+                .addUserName(user.getUserName())
+                .addTimeIssued(issueTime)
+                .addExpiryTime(expiryTime)
+                .addDuration(ticketDuration)
+                .addSessionKey(key)
+                .getBuiltTicket();
     }
 
     /**
