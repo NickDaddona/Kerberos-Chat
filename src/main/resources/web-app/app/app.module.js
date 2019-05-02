@@ -2,5 +2,6 @@
 
 angular.module('app', [
     'login',
+    'messaging',
     'ngRoute'
 ]);
