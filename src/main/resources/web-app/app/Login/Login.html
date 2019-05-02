@@ -8,11 +8,11 @@
         </div>
         <div class="column middle">
             <label for="user"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="user" ng-model="name" required>
+            <input type="text" placeholder="Enter Username" name="user" ng-model="user" required>
             <br>
             <label for="pwd"><b>Password</b></label>
             <input type="password" placeholder="Enter Password" name="pwd" ng-model="pass" required>
-            <button ng-click="generateAuth(phrase)">Login</button>
+            <button ng-click="generateAuth(pass)">Login</button>
         </div>
         <div class="column side">
             <p>Explanation of how it work and how to use it</p>
