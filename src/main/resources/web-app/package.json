@@ -39,7 +39,6 @@
     "gulp-remove-use-strict": "0.0.2",
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.0.0",
-    "http-server": "^0.11.1",
     "jasmine-core": "^3.3.0",
     "karma": "^4.0.1",
     "karma-chrome-launcher": "^2.2.0",
