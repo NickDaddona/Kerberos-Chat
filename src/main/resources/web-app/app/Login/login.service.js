@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('login').service('loginService', function() {
+angular.module('login').service('loginService', [function() {
 
     //TODO: Need to receive salt from the server
 
@@ -14,5 +14,17 @@ angular.module('login').service('loginService', function() {
 
         var hexKey = key.toString(CryptoJS.enc.Hex);
         console.log(hexKey);
+
+        return hexKey;
+    };
+
+    this.passAuth1 = function() {
+        var timestamp = new Date().getTime();
+        console.log(timestamp);
+        console.log(CryptoJS.enc.Utf8.parse(timestamp));
+        var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), "Secret Passphrase");
+        var decrypted = CryptoJS.AES.decrypt(encrypted, "Secret Passphrase");
+        console.log(decrypted.toString(CryptoJS.enc.Utf8));
     }
-});
+
+}]);
