@@ -62,6 +62,17 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!-->Exclude node_modules from being copied to jar<-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>/web-app/node_modules/**/*</exclude>
+                    <exclude>**/package-lock.json</exclude>
+                    <exclude>**/package.json</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -20,7 +20,7 @@ public class UserRole {
      */
     @Id
     @Column(name = "user_name", length = 36, nullable = false)
-    String userName;
+    String username;
 
     /**
      * The role associated with a user
