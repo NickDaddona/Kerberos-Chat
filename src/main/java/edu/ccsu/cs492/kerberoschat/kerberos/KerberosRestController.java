@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Rest Controller related to Kerberos Authentication
@@ -41,13 +43,13 @@ public class KerberosRestController {
      * @param username the name of the user that's trying to authenticate
      * @return the salt of the user's password, if there is a user for the supplied name
      */
-    @RequestMapping(value = "getSalt", method = RequestMethod.POST)
-    public ResponseEntity<String> getSalt(@RequestBody String username) {
+    @RequestMapping(value = "getSalt", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Map<String, String>> getSalt(@RequestBody String username) {
         try {
             String salt = kerberosService.getUserSalt(username);
-            return new ResponseEntity<>(salt, HttpStatus.OK);
+            return new ResponseEntity<>(Collections.singletonMap("salt", salt), HttpStatus.OK);
         } catch (AppUserNotFoundException e) { // Bad request status returned to not indicate if there is a user for that name
-            return new ResponseEntity<>("bad request", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.singletonMap("salt", "bad request"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,10 +72,10 @@ public class KerberosRestController {
                 return new ResponseEntity<>(sessionAuthenticator, HttpStatus.OK); // send response
             }
             else { // timestamp is invalid or expired
-                return new ResponseEntity<>("Invalid Timestamp", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(Collections.singletonMap("message", "Invalid Timestamp"), HttpStatus.UNAUTHORIZED);
             }
         } catch (AppUserNotFoundException | MalformedTGTException e) { // error building a tgt or no use was found in the database
-            return new ResponseEntity<>("Failure to Authenticate", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Collections.singletonMap("message", "Failure to Authenticate"), HttpStatus.UNAUTHORIZED);
         }
     }
 }
