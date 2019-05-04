@@ -1,4 +1,4 @@
-package edu.ccsu.cs492.kerberoschat.kerberos;
+package edu.ccsu.cs492.kerberoschat.kerberos.service;
 
 import edu.ccsu.cs492.kerberoschat.kerberos.ticket.MalformedTGTException;
 import edu.ccsu.cs492.kerberoschat.kerberos.ticket.TicketGrantingTicket;
