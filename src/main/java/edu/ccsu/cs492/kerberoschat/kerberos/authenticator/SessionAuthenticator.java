@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.crypto.SecretKey;
-
 /**
  * A response object for when a user is authenticated, encrypted with the hash of the authenticated user's password
  */
