@@ -8,13 +8,11 @@ import edu.ccsu.cs492.kerberoschat.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 @Service
 public class KerberosService {
+
     private final AppUserService appUserService;
 
     /**
@@ -72,22 +70,6 @@ public class KerberosService {
      */
     public boolean isTGTValid(TicketGrantingTicket TGT) {
         return TGT.getTimeIssued().getTime() + TGT.getDuration() > new Date().getTime();
-    }
-
-    /**
-     * Generates a new AES-256 Key for a session that is being established
-     *
-     * @return a new SecretKey object that contains the generated key
-     */
-    public SecretKey generateSessionKey() {
-        try {
-            KeyGenerator generator = KeyGenerator.getInstance("AES");
-            generator.init(256); // TODO: may need to provide secure random different than one the class creates
-            return generator.generateKey();
-        } catch (NoSuchAlgorithmException e) { // TODO: Determine strategy for handling exception
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**

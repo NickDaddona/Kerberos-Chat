@@ -3,6 +3,7 @@ package edu.ccsu.cs492.kerberoschat.kerberos;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.ccsu.cs492.kerberoschat.kerberos.authenticator.Authenticator;
 import edu.ccsu.cs492.kerberoschat.kerberos.authenticator.SessionAuthenticator;
+import edu.ccsu.cs492.kerberoschat.kerberos.service.CryptoService;
 import edu.ccsu.cs492.kerberoschat.kerberos.service.KerberosService;
 import edu.ccsu.cs492.kerberoschat.kerberos.ticket.ChatTicket;
 import edu.ccsu.cs492.kerberoschat.kerberos.ticket.MalformedTGTException;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,16 +31,19 @@ import java.util.Map;
 @RequestMapping(value = "authentication/")
 public class KerberosRestController {
 
-    private final KerberosService kerberosService;
-
     private final AppUserService appUserService;
+
+    private final CryptoService cryptoService;
+
+    private final KerberosService kerberosService;
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public KerberosRestController(KerberosService kerberosService, AppUserService appUserService, ObjectMapper objectMapper) {
-        this.kerberosService = kerberosService;
+    public KerberosRestController(AppUserService appUserService, KerberosService kerberosService, CryptoService cryptoService, ObjectMapper objectMapper) {
         this.appUserService = appUserService;
+        this.kerberosService = kerberosService;
+        this.cryptoService = cryptoService;
         this.objectMapper = objectMapper;
     }
 
@@ -61,7 +64,7 @@ public class KerberosRestController {
     }
 
     /**
-     * Starts the authentication process for Kerberos. If its successful, a user will recieve a new SessionAuthenticator
+     * Starts the authentication process for Kerberos. If its successful, a user will receive a new SessionAuthenticator
      * with their TicketGrantingTicket and the session key they will be using with the KDC
      *
      * @param authenticator the user's authenticator
@@ -72,8 +75,8 @@ public class KerberosRestController {
         try {
             AppUser user = appUserService.getUser(authenticator.getUsername());
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
-                SecretKey sessionKey = kerberosService.generateSessionKey(); // generate a new session key for the user
-                String encodedKey = Base64.getEncoder().encodeToString(sessionKey.getEncoded()); // encode as base64
+                SecretKey sessionKey = cryptoService.generateSessionKey(); // generate a new session key for the user
+                String encodedKey = cryptoService.decodeSecretKey(sessionKey); // encode as base64
                 TicketGrantingTicket TGT = kerberosService.createTGT(user, encodedKey); // create a TGT for the user
                 SessionAuthenticator sessionAuthenticator = new SessionAuthenticator(encodedKey, TGT); // package TGT
                 return new ResponseEntity<>(sessionAuthenticator, HttpStatus.OK); // send response
@@ -99,7 +102,7 @@ public class KerberosRestController {
         if (kerberosService.isTimestampValid(authenticator.getTimestamp()) && kerberosService.isTGTValid(TGT)) { // continue if the TGT and timestamps are valid
             try {
                 AppUser receiver = appUserService.getUser(authenticator.getUsername());
-                String sessionKey = Base64.getEncoder().encodeToString(kerberosService.generateSessionKey().getEncoded());
+                String sessionKey = cryptoService.decodeSecretKey(cryptoService.generateSessionKey());
                 TicketToUser ticketToUser = new TicketToUser(receiver.getUserName(), sessionKey);
                 ChatTicket chatTicket = new ChatTicket(TGT.getUsername(), sessionKey, ticketToUser);
                 return new ResponseEntity<>(Collections.singletonMap("chatTicket", chatTicket), HttpStatus.OK);
