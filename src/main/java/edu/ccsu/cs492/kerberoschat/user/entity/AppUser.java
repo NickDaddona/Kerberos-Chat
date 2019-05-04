@@ -24,7 +24,7 @@ public class AppUser {
     /**
      * The password for user, hashed with salt appended
      */
-    @Column(name = "encrypted_password", length = 80, nullable = false)
+    @Column(name = "password", length = 80, nullable = false)
     String password;
 
     /**
