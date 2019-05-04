@@ -7,7 +7,7 @@
     "pretest": "npm install",
     "gulpconcat": "./node_modules/.bin/gulp scripts stylesheets",
     "test": "karma start karma.conf.js",
-    "copy-libs": "cpx \"node_modules/{angular,angular-*,bootstrap/dist,jquery/dist,popper.js/dist/}/**/*\" app/lib -C",
+    "copy-libs": "cpx \"node_modules/{angular,angular-*,bootstrap/dist,jquery/dist,popper.js/dist/,crypto-js}/**/*\" app/lib -C",
     "postinstall": "npm run copy-libs",
     "prewatch": "npm install",
     "watch": "./node_modules/.bin/gulp watch",
@@ -21,6 +21,7 @@
     "angular-resource": "^1.7.7",
     "angular-route": "^1.7.7",
     "bootstrap": "^4.3.1",
+    "crypto-js": "^3.1.9-1",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.7"
   },

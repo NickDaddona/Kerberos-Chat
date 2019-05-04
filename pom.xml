@@ -59,6 +59,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -80,6 +84,9 @@
                 <configuration>
                     <mainClass>edu.ccsu.cs492.kerberoschat.KerberosChatApplication</mainClass>
                     <layout>JAR</layout>
+                    <excludes>
+                        <exclude>**/src/main/java/web-app/node_modules/*</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
