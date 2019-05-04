@@ -49,7 +49,7 @@ public class KerberosRestController {
             String salt = kerberosService.getUserSalt(username);
             return new ResponseEntity<>(Collections.singletonMap("salt", salt), HttpStatus.OK);
         } catch (AppUserNotFoundException e) { // Bad request status returned to not indicate if there is a user for that name
-            return new ResponseEntity<>(Collections.singletonMap("salt", "bad request"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Collections.singletonMap("reason", "bad request"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -72,10 +72,10 @@ public class KerberosRestController {
                 return new ResponseEntity<>(sessionAuthenticator, HttpStatus.OK); // send response
             }
             else { // timestamp is invalid or expired
-                return new ResponseEntity<>(Collections.singletonMap("message", "Invalid Timestamp"), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(Collections.singletonMap("reason", "Invalid Timestamp"), HttpStatus.UNAUTHORIZED);
             }
         } catch (AppUserNotFoundException | MalformedTGTException e) { // error building a tgt or no use was found in the database
-            return new ResponseEntity<>(Collections.singletonMap("message", "Failure to Authenticate"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Collections.singletonMap("reason", "Failure to Authenticate"), HttpStatus.UNAUTHORIZED);
         }
     }
 }
