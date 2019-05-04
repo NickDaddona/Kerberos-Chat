@@ -36,15 +36,6 @@ public class TicketGrantingTicket {
      */
     private String sessionKey;
 
-    /**
-     * Determines if the ticket is still valid
-     *
-     * @return true if its valid, false otherwise
-     */
-    public boolean isValid() {
-        return timeIssued.getTime() + duration < expiryTime.getTime();
-    }
-
     @NoArgsConstructor()
     public static class TGTBuilder {
         private String username;

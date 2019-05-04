@@ -65,6 +65,16 @@ public class KerberosService {
     }
 
     /**
+     * Determines if a TicketGrantingTicket is still valid
+     *
+     * @param TGT the TicketGrantingTicket that's being tested
+     * @return true if the ticket is valid, false otherwise
+     */
+    public boolean isTGTValid(TicketGrantingTicket TGT) {
+        return TGT.getTimeIssued().getTime() + TGT.getDuration() > new Date().getTime();
+    }
+
+    /**
      * Generates a new AES-256 Key for a session that is being established
      *
      * @return a new SecretKey object that contains the generated key
