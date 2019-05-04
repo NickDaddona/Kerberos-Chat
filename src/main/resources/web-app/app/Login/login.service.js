@@ -26,9 +26,11 @@ angular.module('login').service('loginService', [
 
         this.getAuthenticator = function (username, key) { // Will generate the authenticators
             var timestamp = new Date().getTime();
-            var auth = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key);
-            var decrypted = CryptoJS.AES.decrypt(auth, key);
-            console.log(decrypted.toString(CryptoJS.enc.Utf8));
+            //console.log(CryptoJS.enc.Utf8.parse(timestamp));
+            var auth = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key, {
+                padding: CryptoJS.pad.Iso10126
+            });
+            //var decrypted = CryptoJS.AES.decrypt(auth, key);
             return {
                 username: username,
                 timestamp: timestamp // TODO: return encrypted timestamp
@@ -45,18 +47,6 @@ angular.module('login').service('loginService', [
                 return $q.resolve(ticketGrantingTicket);
             });
         };
-
-        // Saving this code for later reference
-        /*
-        this.passAuth1 = function() {
-            var timestamp = new Date().getTime();
-            console.log(timestamp);
-            console.log(CryptoJS.enc.Utf8.parse(timestamp));
-            var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), "Secret Passphrase");
-            var decrypted = CryptoJS.AES.decrypt(encrypted, "Secret Passphrase");
-            console.log(decrypted.toString(CryptoJS.enc.Utf8));
-        }
-        */
 
         // This will be used to pass the ticket to the messaging controller
         this.getTicket = function () {

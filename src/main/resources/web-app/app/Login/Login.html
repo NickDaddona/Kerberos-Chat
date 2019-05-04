@@ -4,7 +4,8 @@
     </div>
     <div class="row">
         <div class="column side">
-            <p>Explanation of how it work and how to use it</p>
+            <p>In our Kerberos-Chat implementation, the first thing you must do is enter your username and password</p>
+            <p>During the pause, the frontend will receive a salt from the server based upon the username, then generate a hashed password based upon that</p>
         </div>
         <div class="column middle">
             <label for="user"><b>Username</b></label>
@@ -15,12 +16,9 @@
             <button ng-click="generateAuth(username, password)">Login</button>
         </div>
         <div class="column side">
-            <p>Explanation of how it work and how to use it</p>
+            <p>Next the frontend will take that generated data to form the first authentitcator and send it to the server</p>
+            <p>If the server approves, the user will be sent to the messaging page and the server will send back a TGT and the session key</p>
         </div>
-    </div>
-
-    <div class="footer">
-        <h6>Do we want a footer?</h6>
     </div>
 
 </div>

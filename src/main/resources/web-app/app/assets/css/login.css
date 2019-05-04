@@ -7,16 +7,10 @@ input[type=text], input[type=password] {
     box-sizing: border-box;
 }
 .header {
-    background-color: #FF69B4;
+    background-color: #3469B4;
     padding: 20px;
     text-align: center;
     margin-bottom: 20px;
-}
-.footer {
-    background-color: #0062cc;
-    padding: 20px;
-    text-align: center;
-    margin-top: 20px;
 }
 .column.side {
     width: 30%;
