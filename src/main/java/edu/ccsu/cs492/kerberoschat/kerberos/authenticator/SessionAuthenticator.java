@@ -1,6 +1,5 @@
 package edu.ccsu.cs492.kerberoschat.kerberos.authenticator;
 
-import edu.ccsu.cs492.kerberoschat.kerberos.ticket.TicketGrantingTicket;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ public class SessionAuthenticator {
     private String sessionKey;
 
     /**
-     * The ticket the user will send with every request to the KDC
+     * The encrypted TGT
      */
-    private TicketGrantingTicket ticketGrantingTicket;
+    private String ticketGrantingTicket;
 }

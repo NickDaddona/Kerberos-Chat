@@ -11,11 +11,12 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 @Service
 public class CryptoService {
 
-    private final String CIPHER_TYPE = "AES/CBC/NoPadding";
+    private final String CIPHER_TYPE = "AES/CBC/PKCS5Padding";
 
     private final KeyProtector kdcKeyProtector;
 
@@ -73,6 +74,42 @@ public class CryptoService {
     }
 
     /**
+     * Encrypts the passed plaintext with the KDC Secret Key
+     *
+     * @param plaintext the specified plaintext
+     * @return cipherText that only the KDC can decrypt
+     */
+    public String encryptAESKDC(String plaintext) {
+        return encryptAES(plaintext, kdcKeyProtector.getKdcSecretKey());
+    }
+
+    /**
+     * Encrypts the supplied ciphertext with the supplied key
+     *
+     * @param plaintext the plaintext set to be encrypted
+     * @param key       the key that will be used for encryption
+     * @return the encrypted text with the iv appended to the front
+     */
+    public String encryptAES(String plaintext, SecretKey key) {
+        try {
+            Cipher cipher = Cipher.getInstance(CIPHER_TYPE);
+            byte[] iv = new byte[cipher.getBlockSize()];
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(iv); // generate an iv for encryption
+            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+            String cipherText = new String(Hex.encode(cipher.doFinal(plaintext.getBytes(), 0, plaintext.getBytes().length))); // get a string of the cipherText
+            return new String(Hex.encode(iv)) + cipherText; // add the iv to the front of the cipherText as a String and return
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            System.err.println("Method of encryption used is not supported by JVM (" + CIPHER_TYPE + ")");
+            e.printStackTrace();
+            return null;
+        } catch (InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+            return null; // encryption failed so return null
+        }
+    }
+
+    /**
      * Decrypts the passed ciphertext and iv using the KDC secret key
      *
      * @param cipherTextAndIV the cipherText and accompanying iv that will be decrypted
@@ -118,7 +155,7 @@ public class CryptoService {
      * @param cipherTextAndIV the iv and ciphertext concatenated
      * @return the iv used to encrypt this cipherText
      */
-    public String getIV(String cipherTextAndIV) {
+    private String getIV(String cipherTextAndIV) {
         return cipherTextAndIV.substring(0, 32);
     }
 
@@ -128,7 +165,7 @@ public class CryptoService {
      * @param cipherTextAndIV cipherTextAndIV the iv and ciphertext concatenated
      * @return the ciphertext, minus the IV
      */
-    public String getCipherText(String cipherTextAndIV) {
+    private String getCipherText(String cipherTextAndIV) {
         return cipherTextAndIV.substring(32);
     }
 }
