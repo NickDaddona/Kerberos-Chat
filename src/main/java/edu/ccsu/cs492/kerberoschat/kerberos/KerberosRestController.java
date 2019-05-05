@@ -75,7 +75,7 @@ public class KerberosRestController {
         try {
             AppUser user = appUserService.getUser(payload.get("username"));
             String cipherTextAndIV = payload.get("timestamp");
-            String timestamp = cryptoService.decryptAESCBC(cipherTextAndIV, cryptoService.getUserKey(user));
+            String timestamp = cryptoService.decryptAES(cipherTextAndIV, cryptoService.getUserKey(user));
             payload.put("timestamp", timestamp);
             Authenticator authenticator = objectMapper.convertValue(payload, Authenticator.class);
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
