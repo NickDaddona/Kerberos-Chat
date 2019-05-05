@@ -9,9 +9,7 @@ angular.module('login').service('loginService', [
             return $q.when(CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(salt.toString()), {
                 keySize: 256 / 32,
                 iterations: 185000
-            })).then(function (hash) { // return the key as a hex string
-                return $q.resolve(hash.toString(CryptoJS.enc.Hex));
-            });
+            }));
         };
 
         this.getSalt = function (username) {
@@ -26,13 +24,14 @@ angular.module('login').service('loginService', [
 
         this.getAuthenticator = function (username, key) { // Will generate the authenticators
             var timestamp = new Date().getTime();
-            var auth = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key);
-            var decrypted = CryptoJS.AES.decrypt(auth, key);
-            console.log(decrypted.toString(CryptoJS.enc.Utf8));
-            return {
-                username: username,
-                timestamp: timestamp // TODO: return encrypted timestamp
-            };
+            return $q.when(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key, {
+                iv: CryptoJS.lib.WordArray.random(16)
+            })).then(function (ct) {
+                return $q.resolve({
+                    username: username,
+                    timestamp: ct.iv.toString() + ct.ciphertext.toString()
+                });
+            });
         };
 
         this.sendAuth = function (authenticator) { // send the authenticator to get a TGT
