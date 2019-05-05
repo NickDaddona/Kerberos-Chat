@@ -2,11 +2,13 @@
 
 angular.module('messaging').controller('msgController', ['msgService', 'loginService', '$scope', function(msgService, loginService, $scope) {
 
-    var Ticket = undefined;// The reply from auth2 will saved here
-    $scope.msgFlag = true; // Flag for ng-if
+    var Ss = null; // The reply from auth2 will saved here
+    var TGT = null; // Will hold TGT
+    $scope.recipient = "";
+    $scope.msgFlag = true; // Flag for ng-show
 
-    $scope.sendUandT = function(user, ticket) {
-        msgService.sendUandT(user, ticket);
+    $scope.processMsgAuth = function(user, TGT, key) {
+        msgService.sendMsgAuth(getMsgAuthenticator($scope.recipient, TGT, key));
         $scope.msgFlag = false;
     }
 
@@ -14,9 +16,14 @@ angular.module('messaging').controller('msgController', ['msgService', 'loginSer
         msgService.sendMsg(msg);
     }
 
-    $scope.getTicket = function() {
-        Ticket = loginService.getTicket();
-        return Ticket;
+    $scope.getSessionKey = function() {
+        Ss = loginService.getSessionKey();
+        return Ss;
+    }
+
+    $scope.getTGT = function() {
+        TGT = loginService.getTGT();getSessionKey()
+        return TGT;
     }
 
 }]);
