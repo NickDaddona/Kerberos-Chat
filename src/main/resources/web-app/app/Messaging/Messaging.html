@@ -1,7 +1,28 @@
-<div>
-    <div class="container">
-        <label><b>Messenger</b></label>
-        <input type="text" placeholder="Enter Message" name="msg" ng-model="msg" required>
-        <button ng-click="">Send</button>
+<div ng-controller="msgController">
+    <div class="header">
+        <h1>Kerberos-Chat</h1>
     </div>
+    <div class="row">
+        <div class="column side">
+            <p>Once on the messaging page, the user can request to talk with another user by entering the recipient's username</p>
+            <p>The recipient's username and the sender's ticket are sent up to the server to validate the recipient's existence and the ticket's time</p>
+        </div>
+        <div class="column middle">
+            <label><b>Who Would You Like to Communicate With?</b></label>
+            <input type="text" placeholder="Enter Recipient" name="msg" ng-model="recipient" required>
+            <button ng-click="processMsgAuth(recipient, getTGT(), getSessionKey())">Find</button>
+            <br>
+            <br>
+            <div ng-hide="$scope.msgFlag">
+                <label><b>Messenger</b></label>
+                <input type="text" placeholder="Enter Message" name="msg" ng-model="msg" required>
+                <button ng-click="">Send</button>
+            </div>
+        </div>
+        <div class="column side">
+            <p>If both are satisfactory, the sender will then be able to send a message that will then be stored on the database for the recipient to pull</p>
+            <p></p>
+        </div>
+    </div>
+
 </div>

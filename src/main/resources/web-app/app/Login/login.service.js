@@ -40,8 +40,7 @@ angular.module('login').service('loginService', [
                 method: "POST",
                 url: $location.$$absUrl + "authentication/authenticate",
                 data: authenticator
-            }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
-                console.log(response);
+            }).then(function (response) {
                 cryptoService.decrypt(response.data.authenticator, key.toString(CryptoJS.enc.Hex)).then(function(authenticator) {
                     var auth = JSON.parse(authenticator.toString(CryptoJS.enc.Utf8));
                     sessionKey = auth.sessionKey;
@@ -51,20 +50,13 @@ angular.module('login').service('loginService', [
             });
         };
 
-        // Saving this code for later reference
-        /*
-        this.passAuth1 = function() {
-            var timestamp = new Date().getTime();
-            console.log(timestamp);
-            console.log(CryptoJS.enc.Utf8.parse(timestamp));
-            var encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), "Secret Passphrase");
-            var decrypted = CryptoJS.AES.decrypt(encrypted, "Secret Passphrase");
-            console.log(decrypted.toString(CryptoJS.enc.Utf8));
-        }
-        */
+        // This will be used to pass the session key to the messaging controller
+        this.getSessionKey = function () {
+            return mySessionKey;
+        };
 
         // This will be used to pass the ticket to the messaging controller
-        this.getTicket = function () {
+        this.getTGT = function() {
             return ticketGrantingTicket;
         };
 

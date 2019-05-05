@@ -11,7 +11,7 @@ angular.module('login').controller('loginController', [
          * @param {string} username the username of the user
          * @param {string} password the password of the user
          */
-        $scope.generateAuth = function (username, password) {
+        $scope.processAuth = function (username, password) {
             loginService.getSalt(username).then(function (salt) { // get the user's salt
                 loginService.passHash(password, salt).then(function (hash) { // derive the user's password
                     loginService.getAuthenticator(username, hash).then(function (authenticator) {
@@ -22,5 +22,9 @@ angular.module('login').controller('loginController', [
                 });
             });
         };
+
+        $scope.testMsgPage = function() {
+            $location.path("/message");
+        }
     }
 ]);

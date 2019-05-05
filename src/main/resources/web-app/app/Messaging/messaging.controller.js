@@ -1,16 +1,29 @@
 'use strict';
 
-angular.module('messaging').controller('msgController', ['msgService', 'loginService', function(msgService, loginService) {
+angular.module('messaging').controller('msgController', ['msgService', 'loginService', '$scope', function(msgService, loginService, $scope) {
 
-    var Ticket = undefined;// The reply from auth2 will saved here
+    var Ss = null; // The reply from auth2 will saved here
+    var TGT = null; // Will hold TGT
+    $scope.recipient = "";
+    $scope.msgFlag = true; // Flag for ng-show
+
+    $scope.processMsgAuth = function(user, TGT, key) {
+        msgService.sendMsgAuth(getMsgAuthenticator($scope.recipient, TGT, key));
+        $scope.msgFlag = false;
+    }
 
     $scope.sendMsg = function(msg) {
         msgService.sendMsg(msg);
     }
 
-    $scope.getTicket = function() {
-        Ticket = loginService.getTicket()
-        return Ticket;
+    $scope.getSessionKey = function() {
+        Ss = loginService.getSessionKey();
+        return Ss;
+    }
+
+    $scope.getTGT = function() {
+        TGT = loginService.getTGT();
+        return TGT;
     }
 
 }]);
