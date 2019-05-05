@@ -14,8 +14,10 @@ angular.module('login').controller('loginController', [
         $scope.processAuth = function (username, password) {
             loginService.getSalt(username).then(function (salt) { // get the user's salt
                 loginService.passHash(password, salt).then(function (hash) { // derive the user's password
-                    loginService.sendAuth(loginService.getAuthenticator(username, hash)).then(function () { // send a request for a TGT
-                        $location.path("/message"); // authenticated, so redirect to messenger page
+                    loginService.getAuthenticator(username, hash).then(function (authenticator) {
+                        loginService.sendAuth(authenticator, hash).then(function () { // send a request for a TGT
+                            $location.path("/message"); // authenticated, so redirect to messenger page
+                        });
                     });
                 });
             });

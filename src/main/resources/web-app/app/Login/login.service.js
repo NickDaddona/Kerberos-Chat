@@ -1,18 +1,16 @@
 'use strict';
 
 angular.module('login').service('loginService', [
-    '$http', '$location', '$q',
-    function ($http, $location, $q) {
+    'cryptoService', '$http', '$location', '$q',
+    function (cryptoService, $http, $location, $q) {
         var ticketGrantingTicket = null; // the ticket granting ticket the user will use to communicate with the server
-        var mySessionKey = null; // this will hold the session key sent from the server
+        var sessionKey = null;
 
         this.passHash = function (password, salt) { // Takes the password and hashes it
             return $q.when(CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(salt.toString()), {
                 keySize: 256 / 32,
                 iterations: 185000
-            })).then(function (hash) { // return the key as a hex string
-                return $q.resolve(hash.toString(CryptoJS.enc.Hex));
-            });
+            }));
         };
 
         this.getSalt = function (username) {
@@ -27,27 +25,28 @@ angular.module('login').service('loginService', [
 
         this.getAuthenticator = function (username, key) { // Will generate the authenticators
             var timestamp = new Date().getTime();
-            //console.log(CryptoJS.enc.Utf8.parse(timestamp));
-            var auth = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key, {
-                padding: CryptoJS.pad.Iso10126
+            return $q.when(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key, {
+                iv: CryptoJS.lib.WordArray.random(16)
+            })).then(function (ct) {
+                return $q.resolve({
+                    username: username,
+                    timestamp: ct.iv.toString() + ct.ciphertext.toString()
+                });
             });
-            //var decrypted = CryptoJS.AES.decrypt(auth, key);
-            return {
-                username: username,
-                timestamp: timestamp // TODO: return encrypted timestamp
-            };
         };
 
-        this.sendAuth = function (authenticator) { // send the authenticator to get a TGT
+        this.sendAuth = function (authenticator, key) { // send the authenticator to get a TGT
             return $http({
                 method: "POST",
                 url: $location.$$absUrl + "authentication/authenticate",
                 data: authenticator
-            }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
-                mySessionKey = response.data.sessionKey;
-                // Code will go here to decrypt the session key
-                ticketGrantingTicket = response.data.ticketGrantingTicket;
-                return $q.resolve(ticketGrantingTicket);
+            }).then(function (response) {
+                cryptoService.decrypt(response.data.authenticator, key.toString(CryptoJS.enc.Hex)).then(function(authenticator) {
+                    var auth = JSON.parse(authenticator.toString(CryptoJS.enc.Utf8));
+                    sessionKey = auth.sessionKey;
+                    ticketGrantingTicket = auth.ticketGrantingTicket;
+                });
+                return $q.resolve();
             });
         };
 
@@ -59,6 +58,14 @@ angular.module('login').service('loginService', [
         // This will be used to pass the ticket to the messaging controller
         this.getTGT = function() {
             return ticketGrantingTicket;
-        }
+        };
+
+        this.setSessionKey = function(key) {
+            sessionKey = CryptoJS.enc.Hex.parse(key);
+        };
+
+        this.getSessionkey =  function() {
+            return sessionKey;
+        };
     }
 ]);

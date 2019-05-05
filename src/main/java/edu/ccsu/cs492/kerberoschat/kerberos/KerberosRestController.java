@@ -1,5 +1,6 @@
 package edu.ccsu.cs492.kerberoschat.kerberos;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.ccsu.cs492.kerberoschat.kerberos.authenticator.Authenticator;
 import edu.ccsu.cs492.kerberoschat.kerberos.authenticator.SessionAuthenticator;
@@ -67,24 +68,31 @@ public class KerberosRestController {
      * Starts the authentication process for Kerberos. If its successful, a user will receive a new SessionAuthenticator
      * with their TicketGrantingTicket and the session key they will be using with the KDC
      *
-     * @param authenticator the user's authenticator
+     * @param payload the JSON payload containing
      * @return a response containing a session authenticator if successful, a response indicating failure otherwise
      */
     @RequestMapping(value = "authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> authenticateUser(@RequestBody Authenticator authenticator) {
+    public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> payload) {
         try {
-            AppUser user = appUserService.getUser(authenticator.getUsername());
+            AppUser user = appUserService.getUser(payload.get("username"));
+            String cipherTextAndIV = payload.get("timestamp");
+            SecretKey userKey = cryptoService.getUserKey(user);
+            String timestamp = cryptoService.decryptAES(cipherTextAndIV, userKey);
+            payload.put("timestamp", timestamp);
+            Authenticator authenticator = objectMapper.convertValue(payload, Authenticator.class);
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
                 SecretKey sessionKey = cryptoService.generateSessionKey(); // generate a new session key for the user
-                String encodedKey = cryptoService.decodeSecretKey(sessionKey); // encode as base64
+                String encodedKey = cryptoService.decodeSecretKey(sessionKey); // encode the key as hex
                 TicketGrantingTicket TGT = kerberosService.createTGT(user, encodedKey); // create a TGT for the user
-                SessionAuthenticator sessionAuthenticator = new SessionAuthenticator(encodedKey, TGT); // package TGT
-                return new ResponseEntity<>(sessionAuthenticator, HttpStatus.OK); // send response
+                String encryptedTGT = cryptoService.encryptAESKDC(objectMapper.writeValueAsString(TGT));
+                SessionAuthenticator sessionAuthenticator = new SessionAuthenticator(encodedKey, encryptedTGT); // package TGT
+                String authenticatorCipherText = cryptoService.encryptAES(objectMapper.writeValueAsString(sessionAuthenticator), userKey);
+                return new ResponseEntity<>(Collections.singletonMap("authenticator", authenticatorCipherText), HttpStatus.OK); // send response
             }
             else { // timestamp is invalid or expired
                 return new ResponseEntity<>(Collections.singletonMap("reason", "Invalid Timestamp"), HttpStatus.UNAUTHORIZED);
             }
-        } catch (AppUserNotFoundException | MalformedTGTException e) { // error building a tgt or no use was found in the database
+        } catch (AppUserNotFoundException | MalformedTGTException | JsonProcessingException e) { // error building a tgt or no use was found in the database
             return new ResponseEntity<>(Collections.singletonMap("reason", "Failure to Authenticate"), HttpStatus.UNAUTHORIZED);
         }
     }
