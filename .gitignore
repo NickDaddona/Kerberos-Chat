@@ -38,3 +38,6 @@ src/main/resources/web-app/app/dist/
 
 ### DB Credentials ##
 src/main/resources/database.properties
+
+### Secret Info ###
+src/main/resources/application-secret.properties
