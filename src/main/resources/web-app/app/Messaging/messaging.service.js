@@ -21,7 +21,7 @@ angular.module('messaging').service('msgService', [function() {
     this.sendMsgAuth = function (authenticator) { // send the authenticator to get a ticket to user and Kab
         return $http({
             method: "POST",
-            url: $location.$$absUrl + "authentication/authenticate", // this probably needs to be changed
+            url: $location.$$absUrl + "authentication/connectToUser",
             data: authenticator
         }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
             ourCommsKey = response.data.Kab;
