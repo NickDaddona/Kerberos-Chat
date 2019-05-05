@@ -4,6 +4,7 @@ angular.module('app', [
     'crypto',
     'login',
     'messaging',
+    'path',
     'ticket',
     'ngRoute'
 ]);
