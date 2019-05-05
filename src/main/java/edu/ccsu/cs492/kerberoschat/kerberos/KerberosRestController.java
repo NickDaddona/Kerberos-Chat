@@ -76,7 +76,8 @@ public class KerberosRestController {
         try {
             AppUser user = appUserService.getUser(payload.get("username"));
             String cipherTextAndIV = payload.get("timestamp");
-            String timestamp = cryptoService.decryptAES(cipherTextAndIV, cryptoService.getUserKey(user));
+            SecretKey userKey = cryptoService.getUserKey(user);
+            String timestamp = cryptoService.decryptAES(cipherTextAndIV, userKey);
             payload.put("timestamp", timestamp);
             Authenticator authenticator = objectMapper.convertValue(payload, Authenticator.class);
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
@@ -85,7 +86,7 @@ public class KerberosRestController {
                 TicketGrantingTicket TGT = kerberosService.createTGT(user, encodedKey); // create a TGT for the user
                 String encryptedTGT = cryptoService.encryptAESKDC(objectMapper.writeValueAsString(TGT));
                 SessionAuthenticator sessionAuthenticator = new SessionAuthenticator(encodedKey, encryptedTGT); // package TGT
-                String authenticatorCipherText = cryptoService.encryptAES(objectMapper.writeValueAsString(sessionAuthenticator), sessionKey);
+                String authenticatorCipherText = cryptoService.encryptAES(objectMapper.writeValueAsString(sessionAuthenticator), userKey);
                 return new ResponseEntity<>(Collections.singletonMap("authenticator", authenticatorCipherText), HttpStatus.OK); // send response
             }
             else { // timestamp is invalid or expired
