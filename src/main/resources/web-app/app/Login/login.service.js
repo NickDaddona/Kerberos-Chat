@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('login').service('loginService', [
-    '$http', '$location', '$q',
-    function ($http, $location, $q) {
+    'cryptoService', '$http', '$location', '$q',
+    function (cryptoService, $http, $location, $q) {
         var ticketGrantingTicket = null; // the ticket granting ticket the user will use to communicate with the server
+        var sessionKey = null;
 
         this.passHash = function (password, salt) { // Takes the password and hashes it
             return $q.when(CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(salt.toString()), {
@@ -40,7 +41,13 @@ angular.module('login').service('loginService', [
                 url: $location.$$absUrl + "authentication/authenticate",
                 data: authenticator
             }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
-                ticketGrantingTicket = response.data.ticketGrantingTicket;
+                console.log(response);
+                cryptoService.decrypt(response.data.authenticator).then(function(authenticator) {
+                    var auth = JSON.parse(authenticator);
+                    console.log(authenticator);
+                    sessionKey = auth.sessionKey;
+                    ticketGrantingTicket = auth.ticketGrantingTicket;
+                });
                 return $q.resolve(ticketGrantingTicket);
             });
         };
@@ -60,6 +67,14 @@ angular.module('login').service('loginService', [
         // This will be used to pass the ticket to the messaging controller
         this.getTicket = function () {
             return ticketGrantingTicket;
+        };
+
+        this.setSessionKey = function(key) {
+            sessionKey = CryptoJS.enc.Hex.parse(key);
+        };
+
+        this.getSessionkey =  function() {
+            return sessionKey;
         };
     }
 ]);

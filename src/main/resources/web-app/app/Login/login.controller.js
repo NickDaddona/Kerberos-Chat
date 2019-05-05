@@ -15,6 +15,7 @@ angular.module('login').controller('loginController', [
             loginService.getSalt(username).then(function (salt) { // get the user's salt
                 loginService.passHash(password, salt).then(function (hash) { // derive the user's password
                     loginService.getAuthenticator(username, hash).then(function (authenticator) {
+                        console.log(authenticator);
                         loginService.sendAuth(authenticator).then(function () { // send a request for a TGT
                             $location.path("/message"); // authenticated, so redirect to messenger page
                         });
