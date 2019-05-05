@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('login').service('loginService', [
-    'cryptoService', 'ticketService', '$http', '$location', '$q',
-    function (cryptoService, ticketService, $http, $location, $q) {
+    'cryptoService', 'pathService', 'ticketService', '$http', '$q',
+    function (cryptoService, pathService, ticketService, $http, $q) {
 
         this.passHash = function (password, salt) { // Takes the password and hashes it
             return $q.when(CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(salt.toString()), {
@@ -14,7 +14,7 @@ angular.module('login').service('loginService', [
         this.getSalt = function (username) {
             return $http({
                 method: "POST",
-                url: $location.$$absUrl + "authentication/getSalt",
+                url: pathService.getRootPath() + "authentication/getSalt",
                 data: username
             }).then(function (response) { // resolve the salt if successful
                 return $q.resolve(response.data.salt);
@@ -36,7 +36,7 @@ angular.module('login').service('loginService', [
         this.sendAuth = function (authenticator, key) { // send the authenticator to get a TGT
             return $http({
                 method: "POST",
-                url: $location.$$absUrl + "authentication/authenticate",
+                url: pathService.getRootPath() + "authentication/authenticate",
                 data: authenticator
             }).then(function (response) {
                 cryptoService.decrypt(response.data.authenticator, key.toString(CryptoJS.enc.Hex)).then(function(authenticator) {
