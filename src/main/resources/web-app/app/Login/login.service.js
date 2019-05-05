@@ -35,20 +35,19 @@ angular.module('login').service('loginService', [
             });
         };
 
-        this.sendAuth = function (authenticator) { // send the authenticator to get a TGT
+        this.sendAuth = function (authenticator, key) { // send the authenticator to get a TGT
             return $http({
                 method: "POST",
                 url: $location.$$absUrl + "authentication/authenticate",
                 data: authenticator
             }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
                 console.log(response);
-                cryptoService.decrypt(response.data.authenticator).then(function(authenticator) {
-                    var auth = JSON.parse(authenticator);
-                    console.log(authenticator);
+                cryptoService.decrypt(response.data.authenticator, key.toString(CryptoJS.enc.Hex)).then(function(authenticator) {
+                    var auth = JSON.parse(authenticator.toString(CryptoJS.enc.Utf8));
                     sessionKey = auth.sessionKey;
                     ticketGrantingTicket = auth.ticketGrantingTicket;
                 });
-                return $q.resolve(ticketGrantingTicket);
+                return $q.resolve();
             });
         };
 

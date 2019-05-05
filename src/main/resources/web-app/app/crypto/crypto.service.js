@@ -17,12 +17,12 @@ angular.module('crypto').service('cryptoService', [
             var cipherText = cipherTextandIV.substr(32);
             console.log(iv);
             console.log(cipherText);
-            return $q.when(CryptoJS.AES.decrypt(CryptoJS.enc.Hex.parse(cipherText), CryptoJS.enc.Hex.parse(key), {
+            return $q.when(CryptoJS.AES.decrypt(CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Hex.parse(cipherText)
+            }), CryptoJS.enc.Hex.parse(key), {
                 iv: CryptoJS.enc.Hex.parse(iv),
                 mode: CryptoJS.mode.CBC
-            })).then(function(pt) {
-                console.log(CryptoJS.enc.Utf8.stringify(pt));
-            });
+            }));
         };
     }
 ]);
