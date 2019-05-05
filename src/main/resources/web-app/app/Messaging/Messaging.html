@@ -10,7 +10,7 @@
         <div class="column middle">
             <label><b>Who Would You Like to Communicate With?</b></label>
             <input type="text" placeholder="Enter Recipient" name="msg" ng-model="recipient" required>
-            <button ng-click="sendUandT(recipient, getTicket())">Send</button>
+            <button ng-click="processMsgAuth(recipient, getTGT(), getSessionKey())">Find</button>
             <br>
             <br>
             <div ng-hide="$scope.msgFlag">
