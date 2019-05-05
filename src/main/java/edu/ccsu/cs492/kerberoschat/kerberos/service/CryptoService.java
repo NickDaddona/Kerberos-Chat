@@ -97,7 +97,7 @@ public class CryptoService {
             SecureRandom random = new SecureRandom();
             random.nextBytes(iv); // generate an iv for encryption
             cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
-            String cipherText = new String(Hex.encode(cipher.doFinal(plaintext.getBytes(), 0, plaintext.getBytes().length))); // get a string of the cipherText
+            String cipherText = new String(Hex.encode(cipher.doFinal(plaintext.getBytes()))); // get a string of the cipherText
             return new String(Hex.encode(iv)) + cipherText; // add the iv to the front of the cipherText as a String and return
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             System.err.println("Method of encryption used is not supported by JVM (" + CIPHER_TYPE + ")");
