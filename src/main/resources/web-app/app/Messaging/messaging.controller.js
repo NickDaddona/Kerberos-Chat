@@ -22,7 +22,7 @@ angular.module('messaging').controller('msgController', ['msgService', 'loginSer
     }
 
     $scope.getTGT = function() {
-        TGT = loginService.getTGT();getSessionKey()
+        TGT = loginService.getTGT();
         return TGT;
     }
 
