@@ -67,13 +67,17 @@ public class KerberosRestController {
      * Starts the authentication process for Kerberos. If its successful, a user will receive a new SessionAuthenticator
      * with their TicketGrantingTicket and the session key they will be using with the KDC
      *
-     * @param authenticator the user's authenticator
+     * @param payload the JSON payload containing
      * @return a response containing a session authenticator if successful, a response indicating failure otherwise
      */
     @RequestMapping(value = "authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> authenticateUser(@RequestBody Authenticator authenticator) {
+    public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> payload) {
         try {
-            AppUser user = appUserService.getUser(authenticator.getUsername());
+            AppUser user = appUserService.getUser(payload.get("username"));
+            String cipherTextAndIV = payload.get("timestamp");
+            String timestamp = cryptoService.decryptAESCBC(cipherTextAndIV, cryptoService.getUserKey(user));
+            payload.put("timestamp", timestamp);
+            Authenticator authenticator = objectMapper.convertValue(payload, Authenticator.class);
             if (kerberosService.isTimestampValid(authenticator.getTimestamp())) {
                 SecretKey sessionKey = cryptoService.generateSessionKey(); // generate a new session key for the user
                 String encodedKey = cryptoService.decodeSecretKey(sessionKey); // encode as base64
