@@ -3,8 +3,6 @@
 angular.module('crypto').service('cryptoService', [
     '$q',
     function ($q) {
-        var sessionKey = null;
-
         this.encrypt = function (plaintext, key) {
             console.log(key);
             return $q.when(CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(plaintext), CryptoJS.enc.Hex.parse(key), {
