@@ -15,15 +15,15 @@ public class ChatTicket {
     /**
      * The user the requester has opened a connection with
      */
-    String username;
+    private String username;
 
     /**
      * The session key that will be used for all communication
      */
-    String sessionKey;
+    private String sessionKey;
 
     /**
-     * The ticket that will be sent to the receiving user
+     * The encrypted ticket that will be sent to the receiving user
      */
-    TicketToUser ticketToUser;
+    private String ticketToUser;
 }

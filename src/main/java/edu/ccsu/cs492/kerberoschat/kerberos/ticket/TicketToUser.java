@@ -14,10 +14,10 @@ public class TicketToUser {
     /**
      * The username of the sender of the ticket
      */
-    String username;
+    private String username;
 
     /**
      * The session key for the incoming messages
      */
-    String sessionKey;
+    private String sessionKey;
 }
