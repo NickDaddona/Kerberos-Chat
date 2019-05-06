@@ -4,6 +4,7 @@ angular.module('messaging').controller('msgController', [
     'msgService', 'loginService', 'ticketService', '$scope',
     function (msgService, loginService, ticketService, $scope) {
         var Ss = null; // The reply from auth2 will saved here
+        var recipient = null;
         $scope.recipient = "";
         $scope.msgFlag = true; // Flag for ng-hide
         $scope.message = "";
@@ -12,12 +13,13 @@ angular.module('messaging').controller('msgController', [
             msgService.getMsgAuthenticator($scope.recipient).then(function(authenticator) {
                 msgService.sendMsgAuth(authenticator).then(function() {
                     $scope.msgFlag = false;
+                    recipient = $scope.recipient;
                 })
             });
         };
 
         $scope.processCommsAuth = function () {
-            msgService.getCommsAuthenticator(loginService.getUser(), ticketService.getTicketToUser(), $scope.message).then(function(msgPackage){
+            msgService.getCommsAuthenticator(recipient, ticketService.getTicketToUser(), $scope.message).then(function(msgPackage){
                 msgService.sendCommsAuthenticator(msgPackage);
                 $scope.commsFlag = false;
             });
