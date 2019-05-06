@@ -28,6 +28,8 @@ angular.module('messaging').controller('msgController', [
         $scope.getMsgs = function () {
             msgService.getMessages(ticketService.getTGT()).then(function (res) {
                 console.log(res);
+                $scope.sender = res.ticketToMe.username;
+                $scope.msgs = res.messages;
             });
         };
     }
