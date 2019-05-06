@@ -10,8 +10,8 @@ angular.module('messaging').controller('msgController', [
         $scope.message = "";
 
         $scope.processMsgAuth = function () {
-            msgService.getMsgAuthenticator($scope.recipient).then(function(authenticator) {
-                msgService.sendMsgAuth(authenticator).then(function() {
+            msgService.getMsgAuthenticator($scope.recipient).then(function (authenticator) {
+                msgService.sendMsgAuth(authenticator).then(function () {
                     $scope.msgFlag = false;
                     recipient = $scope.recipient;
                 })
@@ -19,14 +19,16 @@ angular.module('messaging').controller('msgController', [
         };
 
         $scope.processCommsAuth = function () {
-            msgService.getCommsAuthenticator(recipient, ticketService.getTicketToUser(), $scope.message).then(function(msgPackage){
+            msgService.getCommsAuthenticator(recipient, ticketService.getTicketToUser(), $scope.message).then(function (msgPackage) {
                 msgService.sendCommsAuthenticator(msgPackage);
                 $scope.commsFlag = false;
             });
         };
 
         $scope.getMsgs = function () {
-            msgService.getMessages(ticketService.getTGT());
+            msgService.getMessages(ticketService.getTGT()).then(function (res) {
+                console.log(res);
+            });
         };
     }
 ]);

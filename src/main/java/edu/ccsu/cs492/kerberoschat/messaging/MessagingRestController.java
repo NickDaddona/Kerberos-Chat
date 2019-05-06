@@ -55,13 +55,13 @@ public class MessagingRestController {
      * @return a response entity with a conversation if the user has one
      */
     @RequestMapping(value = "getMessages", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, ?>> getConversation(@RequestBody Map<String, String> payload) throws IOException {
+    public ResponseEntity<?> getConversation(@RequestBody Map<String, String> payload) throws IOException {
         String encryptedTGT = payload.get("ticketGrantingTicket"); // get the tgt ciphertext
         TicketGrantingTicket TGT = objectMapper.readValue(cryptoService.decryptAESKDC(encryptedTGT), TicketGrantingTicket.class); // decrypt TGT
         if (kerberosService.isTGTValid(TGT)) {
             Conversation conversation = messagingService.getConversation(TGT.getUsername());
             if (conversation != null) {
-                return new ResponseEntity<>(Collections.singletonMap("conversation", conversation), HttpStatus.OK);
+                return new ResponseEntity<>(conversation, HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>(Collections.singletonMap("message", "no conversation available"), HttpStatus.NOT_FOUND);

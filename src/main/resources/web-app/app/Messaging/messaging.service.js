@@ -57,10 +57,26 @@ angular.module('messaging').service('msgService', [
             return $http({
                 method: "POST",
                 url: pathService.getRootPath() + "message/getMessages",
-                data: TGT
+                data: {
+                    ticketGrantingTicket: TGT
+                }
             }).then(function (response) {
-                console.log(response.data);
-            })
+                var conversation = response.data;
+                return cryptoService.decrypt(conversation.ticketToUser, ticketService.getUserKey()).then(function (pt) {
+                    var ticketToMe = JSON.parse(pt.toString(CryptoJS.enc.Utf8));
+                    var msgPlaintextArray = [];
+                    for (var i = 0; i < conversation.messages.length; i++) {
+                        cryptoService.decrypt(conversation.messages[i], ticketToMe.sessionKey).then(function (pt) {
+                            msgPlaintextArray.push(pt.toString(CryptoJS.enc.Utf8));
+                            console.log(pt.toString(CryptoJS.enc.Utf8));
+                        });
+                    }
+                    return $q.resolve({
+                        ticketToMe: ticketToMe,
+                        messages: msgPlaintextArray
+                    });
+                });
+            });
         };
     }]
 );
