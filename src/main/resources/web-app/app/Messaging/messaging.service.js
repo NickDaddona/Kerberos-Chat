@@ -1,38 +1,44 @@
 'use strict';
 
-angular.module('messaging').service('msgService', [function() {
+angular.module('messaging').service('msgService', [
+    'cryptoService', 'pathService', 'ticketService', '$http', '$q',
+    function (cryptoService, pathService, ticketService, $http, $q) {
+        var ticketToUser = null; // Will hold the ticket to the user they want to communicate with
+        var ourCommsKey = null; // Will hold Kab
 
-    var msgAuthentication = null; // Will be the response for confirmation of messaging
-    var ticketToUser = null; // Will hold the ticket to the user they want to communicate with
-    var ourCommsKey = null; // Will hold Kab
-
-    this.getMsgAuthenticator = function (user, TGT, key) { // Will generate the second authenticator
-        var timestamp = new Date().getTime();
-        var auth = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(timestamp), key, {
-            padding: CryptoJS.pad.Iso10126
-        });
-        return {
-            user: user,
-            TGT: TGT,
-            timestamp: timestamp // TODO: return encrypted timestamp
+        this.getMsgAuthenticator = function (user) { // Will generate the second authenticator
+            var authenticator = JSON.stringify({
+                username: user,
+                timestamp: new Date().getTime()
+            });
+            console.log(authenticator);
+            return cryptoService.encrypt(authenticator, ticketService.getSessionKey()).then(function (ct) {
+                return $q.resolve({ // resolve the completed authenticator
+                    authenticator: ct.iv.toString() + ct.ciphertext.toString(),
+                    ticketGrantingTicket: ticketService.getTGT()
+                });
+            });
         };
-    };
 
-    this.sendMsgAuth = function (authenticator) { // send the authenticator to get a ticket to user and Kab
-        return $http({
-            method: "POST",
-            url: $location.$$absUrl + "authentication/connectToUser",
-            data: authenticator
-        }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
-            ourCommsKey = response.data.Kab;
-            // Code will go here to decrypt the session key
-            ticketToUser = response.data.ticketToUser;
-            return $q.resolve(ticketToUser);
-        });
-    };
+        this.sendMsgAuth = function (authenticator) { // send the authenticator to get a ticket to user and Kab
+            console.log(pathService.getRootPath());
+            return $http({
+                method: "POST",
+                url: pathService.getRootPath() + "authentication/connectToUser",
+                data: authenticator
+            }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
+                return cryptoService.decrypt(response.data.chatTicket, ticketService.getSessionKey()).then(function (plaintext) {
+                    console.log(plaintext);
+                    var authenticator = JSON.stringify(plaintext);
+                    ourCommsKey = authenticator.chatTicket;
+                    ticketToUser = authenticator.chatTicket.ticketToUser;
+                    return $q.resolve();
+                });
+            });
+        };
 
-    this.sendMSG = function() {
-        // code will go here to send the message to the server
-    }
-
-}]);
+        this.sendMSG = function () {
+            // code will go here to send the message to the server
+        }
+    }]
+);
