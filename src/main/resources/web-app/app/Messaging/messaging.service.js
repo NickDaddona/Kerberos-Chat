@@ -3,8 +3,6 @@
 angular.module('messaging').service('msgService', [
     'cryptoService', 'pathService', 'ticketService', '$http', '$q',
     function (cryptoService, pathService, ticketService, $http, $q) {
-        var userTicket = null; // Will hold the ticket to the user they want to communicate with
-        var ourCommsKey = null; // Will hold Kab
 
         this.getMsgAuthenticator = function (user) { // Will generate the second authenticator
             var authenticator = JSON.stringify({
