@@ -35,12 +35,14 @@ angular.module('messaging').service('msgService', [
         };
 
         this.getCommsAuthenticator = function (username, ticket, msg) {
-            var msgPackage = JSON.stringify({
-                recipient: username,
-                ticketToUser: ticket,
-                message: msg
+            return cryptoService.encrypt(msg, ticketService.getCommsKey()).then(function (ct) {
+                var msgPackage = JSON.stringify({
+                    recipient: username,
+                    ticketToUser: ticket,
+                    message: ct.iv.toString() + ct.ciphertext.toString()
+                });
+                return $q.resolve(msgPackage);
             });
-            return $q.resolve(msgPackage);
         };
 
         this.sendCommsAuthenticator = function (msgPackage) {
