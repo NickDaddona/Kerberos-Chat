@@ -26,7 +26,7 @@ angular.module('messaging').service('msgService', [
                 data: authenticator
             }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
                 return cryptoService.decrypt(response.data.chatTicket, ticketService.getSessionKey()).then(function (plaintext) {
-                    var authenticator = JSON.stringify(plaintext.toString(CryptoJS.enc.Utf8));
+                    var authenticator = JSON.parse(plaintext.toString(CryptoJS.enc.Utf8));
                     ticketService.setCommsKey(authenticator.sessionKey);
                     ticketService.setTicketToUser(authenticator.ticketToUser);
                     return $q.resolve();
@@ -34,7 +34,7 @@ angular.module('messaging').service('msgService', [
             });
         };
 
-        this.getCommsAuthenticator = function(username, ticket, msg) {
+        this.getCommsAuthenticator = function (username, ticket, msg) {
             var msgPackage = JSON.stringify({
                 recipient: username,
                 ticketToUser: ticket,
@@ -43,24 +43,24 @@ angular.module('messaging').service('msgService', [
             return $q.resolve(msgPackage);
         };
 
-        this.sendCommsAuthenticator = function(msgPackage) {
+        this.sendCommsAuthenticator = function (msgPackage) {
             return $http({
                 method: "POST",
                 url: pathService.getRootPath() + "message/sendMessage",
                 data: msgPackage
-            }).then(function(response){
-                    console.log(response.data);
+            }).then(function (response) {
+                console.log(response.data);
             })
-        }
+        };
 
-        this.getMessages = function(TGT) {
+        this.getMessages = function (TGT) {
             return $http({
                 method: "POST",
                 url: pathService.getRootPath() + "message/getMessages",
                 data: TGT
-            }).then(function(response){
+            }).then(function (response) {
                 console.log(response.data);
             })
-        }
+        };
     }]
 );
