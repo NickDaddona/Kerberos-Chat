@@ -17,6 +17,7 @@ angular.module('login').controller('loginController', [
                     loginService.getAuthenticator(username, hash).then(function (authenticator) {
                         loginService.sendAuth(authenticator, hash).then(function () { // send a request for a TGT
                             loginService.setUser($scope.username);
+                            ticketService.setUserKey(hash.toString(CryptoJS.enc.Hex));
                             $location.path("/message"); // authenticated, so redirect to messenger page
                         });
                     });
