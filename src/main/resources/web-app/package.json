@@ -1,0 +1,49 @@
+{
+  "name": "kerberos-webapp",
+  "version": "1.0.0",
+  "description": "The webapp for a Kerberos Based Chat Application",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm install",
+    "gulpconcat": "./node_modules/.bin/gulp scripts stylesheets",
+    "test": "karma start karma.conf.js",
+    "copy-libs": "cpx \"node_modules/{angular,angular-*,bootstrap/dist,jquery/dist,popper.js/dist/,crypto-js}/**/*\" app/lib -C",
+    "postinstall": "npm run copy-libs",
+    "prewatch": "npm install",
+    "watch": "./node_modules/.bin/gulp watch",
+    "build": "npm run gulpconcat"
+  },
+  "author": "Nicholas Daddona and Sean Schmidt",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.7.7",
+    "angular-animate": "^1.7.7",
+    "angular-resource": "^1.7.7",
+    "angular-route": "^1.7.7",
+    "bootstrap": "^4.3.1",
+    "crypto-js": "^3.1.9-1",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.7"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.7.7",
+    "cpx": "^1.5.0",
+    "del": "^4.0.0",
+    "eslint": "^5.14.1",
+    "eslint-plugin-angular": "^4.0.0",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "eslint-plugin-json": "^1.4.0",
+    "eslint-plugin-node": "^8.0.1",
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-concat-css": "^3.1.0",
+    "gulp-remove-use-strict": "0.0.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
+    "jasmine-core": "^3.3.0",
+    "karma": "^4.0.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^2.0.1"
+  }
+}

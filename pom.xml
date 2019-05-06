@@ -52,13 +52,31 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
         </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <!-->Exclude node_modules from being copied to jar<-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>/web-app/node_modules/**/*</exclude>
+                    <exclude>**/package-lock.json</exclude>
+                    <exclude>**/package.json</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -66,6 +84,9 @@
                 <configuration>
                     <mainClass>edu.ccsu.cs492.kerberoschat.KerberosChatApplication</mainClass>
                     <layout>JAR</layout>
+                    <excludes>
+                        <exclude>**/src/main/java/web-app/node_modules/*</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

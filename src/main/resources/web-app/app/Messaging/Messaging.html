@@ -1,0 +1,36 @@
+<div ng-controller="msgController">
+    <div class="header">
+        <h1>Kerberos-Chat</h1>
+    </div>
+    <div class="row">
+        <div class="column side">
+            <p>Once on the messaging page, the user can request to talk with another user by entering the recipient's username</p>
+            <p>The recipient's username and the sender's ticket are sent up to the server to validate the recipient's existence and the ticket's time</p>
+        </div>
+        <div class="column middle">
+            <label><b>Who Would You Like to Communicate With?</b></label>
+            <input type="text" placeholder="Enter Recipient" name="msg" ng-model="recipient" required>
+            <button ng-click="processMsgAuth(recipient, getTGT(), getSessionKey())">Find</button>
+            <br>
+            <br>
+            <div ng-hide="msgFlag" class="ng-hide">
+                <label><b>Messenger</b></label>
+                <input type="text" placeholder="Enter Message" name="mssg" ng-model="message" required>
+                <button ng-click="processCommsAuth(user, ticket, msg)">Send</button>
+            </div>
+            <div>
+                <label><b>Get Pending Messages</b></label>
+                <button ng-click="getMsgs(tgt)">Receive Messages</button>
+                <div>
+                    <p>Sender: {{sender}}</p>
+                    <p ng-repeat="y in msgs"> Message: {{y}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="column side">
+            <p>If both are satisfactory, the sender will then be able to send a message that will then be stored on the database for the recipient to pull</p>
+            <p>The messages can be received by the user hitting the respective button which will send up their TGT for verification and the saved messages will appear</p>
+        </div>
+    </div>
+
+</div>
