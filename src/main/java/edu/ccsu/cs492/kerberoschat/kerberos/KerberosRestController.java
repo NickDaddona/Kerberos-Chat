@@ -114,11 +114,11 @@ public class KerberosRestController {
         if (kerberosService.isTimestampValid(authenticator.getTimestamp()) && kerberosService.isTGTValid(TGT)) { // continue if the TGT and timestamps are valid
             try {
                 AppUser receiver = appUserService.getUser(authenticator.getUsername()); // get the recipient
-                SecretKey recieverKey = cryptoService.getUserKey(receiver); // get the recipient's encryption key
+                SecretKey receiverKey = cryptoService.getUserKey(receiver); // get the recipient's encryption key
                 String chatKey = cryptoService.decodeSecretKey(cryptoService.generateSessionKey());
-                TicketToUser ticketToUser = new TicketToUser(receiver.getUserName(), chatKey);
-                String ttUEncrypted = cryptoService.encryptAES(objectMapper.writeValueAsString(ticketToUser), recieverKey);
-                ChatTicket chatTicket = new ChatTicket(TGT.getUsername(), chatKey, ttUEncrypted);
+                TicketToUser ticketToUser = new TicketToUser(TGT.getUsername(), chatKey);
+                String ttUEncrypted = cryptoService.encryptAES(objectMapper.writeValueAsString(ticketToUser), receiverKey);
+                ChatTicket chatTicket = new ChatTicket(receiver.getUserName(), chatKey, ttUEncrypted);
                 String chatTicketEncrypted = cryptoService.encryptAES(objectMapper.writeValueAsString(chatTicket), sessionKey);
                 return new ResponseEntity<>(Collections.singletonMap("chatTicket", chatTicketEncrypted), HttpStatus.OK);
             } catch (AppUserNotFoundException e) { // the user the authenticated user wants to connect to doesn't exist
