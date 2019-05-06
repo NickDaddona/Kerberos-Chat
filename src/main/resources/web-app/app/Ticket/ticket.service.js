@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ticket').service('ticketService', [function() {
+angular.module('ticket').service('ticketService', [function () {
 
     var userKey = null;
     var ticketGrantingTicket = null;
@@ -9,43 +9,43 @@ angular.module('ticket').service('ticketService', [function() {
     var commsKey = null;
 
 
-    this.setUserKey = function(Uk) {
+    this.setUserKey = function (Uk) {
         userKey = Uk;
-    }
+    };
 
-    this.getUserKey = function() {
+    this.getUserKey = function () {
         return userKey;
-    }
-    this.setTGT = function(TGT) {
+    };
+
+    this.setTGT = function (TGT) {
         ticketGrantingTicket = TGT;
     };
 
-    this.getTGT = function() {
+    this.getTGT = function () {
         return ticketGrantingTicket;
     };
 
-    this.setSessionKey = function(key) {
+    this.setSessionKey = function (key) {
         sessionKey = key;
     };
 
-    this.getSessionKey = function() {
+    this.getSessionKey = function () {
         return sessionKey;
     };
 
-    this.setTicketToUser = function(TTU) {
+    this.setTicketToUser = function (TTU) {
         ticketToUser = TTU;
     };
 
-    this.getTicketToUser = function() {
+    this.getTicketToUser = function () {
         return ticketToUser;
     };
 
-    this.setCommsKey = function(Ck) {
+    this.setCommsKey = function (Ck) {
         commsKey = Ck;
     };
 
-    this.getCommsKey = function() {
+    this.getCommsKey = function () {
         return commsKey;
     };
-
 }]);
