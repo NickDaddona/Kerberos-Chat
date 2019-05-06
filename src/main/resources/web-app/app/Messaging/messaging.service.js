@@ -52,5 +52,15 @@ angular.module('messaging').service('msgService', [
                     console.log(response.data);
             })
         }
+
+        this.getMessages = function(TGT) {
+            return $http({
+                method: "POST",
+                url: pathService.getRootPath() + "message/getMessages",
+                data: TGT
+            }).then(function(response){
+                console.log(response.data);
+            })
+        }
     }]
 );

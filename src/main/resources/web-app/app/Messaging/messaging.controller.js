@@ -5,7 +5,7 @@ angular.module('messaging').controller('msgController', [
     function (msgService, loginService, ticketService, $scope) {
         var Ss = null; // The reply from auth2 will saved here
         $scope.recipient = "";
-        $scope.msgFlag = true; // Flag for ng-show
+        $scope.msgFlag = true; // Flag for ng-hide
         $scope.message = "";
 
         $scope.processMsgAuth = function () {
@@ -19,11 +19,12 @@ angular.module('messaging').controller('msgController', [
         $scope.processCommsAuth = function () {
             msgService.getCommsAuthenticator(loginService.getUser(), ticketService.getTicketToUser(), $scope.message).then(function(msgPackage){
                 msgService.sendCommsAuthenticator(msgPackage);
+                $scope.commsFlag = false;
             });
         };
 
-        $scope.sendMsg = function (msg) {
-            msgService.sendMsg(msg);
+        $scope.getMsgs = function () {
+            msgService.getMessages(ticketService.getTGT());
         };
     }
 ]);

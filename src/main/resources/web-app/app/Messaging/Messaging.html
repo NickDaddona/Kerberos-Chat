@@ -18,6 +18,10 @@
                 <input type="text" placeholder="Enter Message" name="msg" ng-model="msg" required>
                 <button ng-click="processCommsAuth(user, ticket, msg)">Send</button>
             </div>
+            <div>
+                <label><b>Get Pending Messages</b></label>
+                <button ng-click="getMsgs(tgt)">Receive Messages</button>
+            </div>
         </div>
         <div class="column side">
             <p>If both are satisfactory, the sender will then be able to send a message that will then be stored on the database for the recipient to pull</p>
