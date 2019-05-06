@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('login').controller('loginController', [
-    'loginService', '$location', '$scope',
-    function (loginService, $location, $scope) {
+    'loginService', 'ticketService', '$location', '$scope',
+    function (loginService, ticketService, $location, $scope) {
         $scope.password = ""; // Stores the password
-        $scope.user = ""; // This will save the user's name put into the username input box
+        $scope.username = ""; // This will save the user's name put into the username input box
 
         /**
          * Attempts to authenticate the user with the KDC, based on a set of promises provided by the loginService
@@ -16,6 +16,7 @@ angular.module('login').controller('loginController', [
                 loginService.passHash(password, salt).then(function (hash) { // derive the user's password
                     loginService.getAuthenticator(username, hash).then(function (authenticator) {
                         loginService.sendAuth(authenticator, hash).then(function () { // send a request for a TGT
+                            loginService.setUser($scope.username);
                             $location.path("/message"); // authenticated, so redirect to messenger page
                         });
                     });
@@ -23,8 +24,5 @@ angular.module('login').controller('loginController', [
             });
         };
 
-        $scope.testMsgPage = function() {
-            $location.path("/message");
-        }
     }
 ]);

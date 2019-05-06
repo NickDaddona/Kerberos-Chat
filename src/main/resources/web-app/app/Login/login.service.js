@@ -3,6 +3,7 @@
 angular.module('login').service('loginService', [
     'cryptoService', 'pathService', 'ticketService', '$http', '$q',
     function (cryptoService, pathService, ticketService, $http, $q) {
+        var username;
 
         this.passHash = function (password, salt) { // Takes the password and hashes it
             return $q.when(CryptoJS.PBKDF2(password, CryptoJS.enc.Hex.parse(salt.toString()), {
@@ -47,5 +48,13 @@ angular.module('login').service('loginService', [
                 return $q.resolve();
             });
         };
+
+        this.setUser = function(user) {
+            username = user
+        }
+
+        this.getUser = function() {
+            return username;
+        }
     }
 ]);
