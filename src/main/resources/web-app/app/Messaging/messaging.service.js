@@ -11,7 +11,6 @@ angular.module('messaging').service('msgService', [
                 username: user,
                 timestamp: new Date().getTime()
             });
-            console.log(authenticator);
             return cryptoService.encrypt(authenticator, ticketService.getSessionKey()).then(function (ct) {
                 return $q.resolve({ // resolve the completed authenticator
                     authenticator: ct.iv.toString() + ct.ciphertext.toString(),
@@ -21,17 +20,15 @@ angular.module('messaging').service('msgService', [
         };
 
         this.sendMsgAuth = function (authenticator) { // send the authenticator to get a ticket to user and Kab
-            console.log(pathService.getRootPath());
             return $http({
                 method: "POST",
                 url: pathService.getRootPath() + "authentication/connectToUser",
                 data: authenticator
             }).then(function (response) { // TODO: Decrypt authenticator to extract TGT
                 return cryptoService.decrypt(response.data.chatTicket, ticketService.getSessionKey()).then(function (plaintext) {
-                    console.log(plaintext);
-                    var authenticator = JSON.stringify(plaintext);
-                    ourCommsKey = authenticator.chatTicket;
-                    ticketToUser = authenticator.chatTicket.ticketToUser;
+                    var authenticator = JSON.stringify(plaintext.toString(CryptoJS.enc.Utf8));
+                    ourCommsKey = authenticator.sessionKey;
+                    ticketToUser = authenticator.ticketToUser;
                     return $q.resolve();
                 });
             });

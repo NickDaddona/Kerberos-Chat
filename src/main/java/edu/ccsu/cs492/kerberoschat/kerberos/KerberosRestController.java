@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -104,12 +105,12 @@ public class KerberosRestController {
      * @return a ticket to a user, encrypted with the TGT's session key, if the process is successful
      */
     @RequestMapping(value = "connectToUser", method = RequestMethod.POST)
-    public ResponseEntity<?> getTicketToUser(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> getTicketToUser(@RequestBody Map<String, String> payload) throws IOException {
         String encryptedTGT = payload.get("ticketGrantingTicket"); // get the tgt ciphertext
-        TicketGrantingTicket TGT = objectMapper.convertValue(cryptoService.decryptAESKDC(encryptedTGT), TicketGrantingTicket.class); // decrypt TGT
+        TicketGrantingTicket TGT = objectMapper.readValue(cryptoService.decryptAESKDC(encryptedTGT), TicketGrantingTicket.class); // decrypt TGT
         SecretKey sessionKey = cryptoService.encodeSecretKey(TGT.getSessionKey()); // get the session key
         String encryptedAuthenticator = payload.get("authenticator");
-        Authenticator authenticator = objectMapper.convertValue(cryptoService.decryptAES(encryptedAuthenticator, sessionKey), Authenticator.class); //Convert JSON portion to Objects
+        Authenticator authenticator = objectMapper.readValue(cryptoService.decryptAES(encryptedAuthenticator, sessionKey), Authenticator.class); //Convert JSON portion to Objects
         if (kerberosService.isTimestampValid(authenticator.getTimestamp()) && kerberosService.isTGTValid(TGT)) { // continue if the TGT and timestamps are valid
             try {
                 AppUser receiver = appUserService.getUser(authenticator.getUsername()); // get the recipient

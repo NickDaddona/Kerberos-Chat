@@ -9,7 +9,6 @@ angular.module('messaging').controller('msgController', [
 
         $scope.processMsgAuth = function () {
             msgService.getMsgAuthenticator($scope.recipient).then(function(authenticator) {
-                console.log(authenticator);
                 msgService.sendMsgAuth(authenticator).then(function() {
                     $scope.msgFlag = false;
                 })
