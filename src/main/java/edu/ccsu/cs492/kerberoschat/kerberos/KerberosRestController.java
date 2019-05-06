@@ -104,18 +104,26 @@ public class KerberosRestController {
      * @return a ticket to a user, encrypted with the TGT's session key, if the process is successful
      */
     @RequestMapping(value = "connectToUser", method = RequestMethod.POST)
-    public ResponseEntity<?> getTicketToUser(@RequestBody Map<String, Object> payload) {
-        Authenticator authenticator = objectMapper.convertValue(payload.get("authenticator"), Authenticator.class); //Convert JSON portion to Objects // TODO: will have to decrypt JSON received
-        TicketGrantingTicket TGT = objectMapper.convertValue(payload.get("ticketGrantingTicket"), TicketGrantingTicket.class);
+    public ResponseEntity<?> getTicketToUser(@RequestBody Map<String, String> payload) {
+        String encryptedTGT = payload.get("ticketGrantingTicket"); // get the tgt ciphertext
+        TicketGrantingTicket TGT = objectMapper.convertValue(cryptoService.decryptAESKDC(encryptedTGT), TicketGrantingTicket.class); // decrypt TGT
+        SecretKey sessionKey = cryptoService.encodeSecretKey(TGT.getSessionKey()); // get the session key
+        String encryptedAuthenticator = payload.get("authenticator");
+        Authenticator authenticator = objectMapper.convertValue(cryptoService.decryptAES(encryptedAuthenticator, sessionKey), Authenticator.class); //Convert JSON portion to Objects
         if (kerberosService.isTimestampValid(authenticator.getTimestamp()) && kerberosService.isTGTValid(TGT)) { // continue if the TGT and timestamps are valid
             try {
-                AppUser receiver = appUserService.getUser(authenticator.getUsername());
-                String sessionKey = cryptoService.decodeSecretKey(cryptoService.generateSessionKey());
-                TicketToUser ticketToUser = new TicketToUser(receiver.getUserName(), sessionKey);
-                ChatTicket chatTicket = new ChatTicket(TGT.getUsername(), sessionKey, ticketToUser);
-                return new ResponseEntity<>(Collections.singletonMap("chatTicket", chatTicket), HttpStatus.OK);
+                AppUser receiver = appUserService.getUser(authenticator.getUsername()); // get the recipient
+                SecretKey recieverKey = cryptoService.getUserKey(receiver); // get the recipient's encryption key
+                String chatKey = cryptoService.decodeSecretKey(cryptoService.generateSessionKey());
+                TicketToUser ticketToUser = new TicketToUser(receiver.getUserName(), chatKey);
+                String ttUEncrypted = cryptoService.encryptAES(objectMapper.writeValueAsString(ticketToUser), recieverKey);
+                ChatTicket chatTicket = new ChatTicket(TGT.getUsername(), chatKey, ttUEncrypted);
+                String chatTicketEncrypted = cryptoService.encryptAES(objectMapper.writeValueAsString(chatTicket), sessionKey);
+                return new ResponseEntity<>(Collections.singletonMap("chatTicket", chatTicketEncrypted), HttpStatus.OK);
             } catch (AppUserNotFoundException e) { // the user the authenticated user wants to connect to doesn't exist
                 return new ResponseEntity<>(Collections.singletonMap("reason", "No User exists with this name"), HttpStatus.NOT_FOUND);
+            } catch (JsonProcessingException e) {
+                return new ResponseEntity<>(Collections.singletonMap("reason", "Error converting to JSON"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         else {

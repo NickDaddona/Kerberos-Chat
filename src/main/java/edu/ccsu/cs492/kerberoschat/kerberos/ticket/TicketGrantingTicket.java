@@ -1,5 +1,7 @@
 package edu.ccsu.cs492.kerberoschat.kerberos.ticket;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,11 +21,13 @@ public class TicketGrantingTicket {
     /**
      * The time the ticket was issued
      */
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Date timeIssued;
 
     /**
      * The time the ticket is set to expire
      */
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Date expiryTime;
 
     /**
@@ -36,6 +40,7 @@ public class TicketGrantingTicket {
      */
     private String sessionKey;
 
+    @JsonIgnoreType
     @NoArgsConstructor()
     public static class TGTBuilder {
         private String username;
@@ -64,8 +69,8 @@ public class TicketGrantingTicket {
             return this;
         }
 
-        public TGTBuilder addSessionKey(String base64SessionKey) {
-            this.sessionKey = base64SessionKey;
+        public TGTBuilder addSessionKey(String SessionKey) {
+            this.sessionKey = SessionKey;
             return this;
         }
 
