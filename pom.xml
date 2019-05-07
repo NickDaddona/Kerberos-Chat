@@ -84,9 +84,6 @@
                 <configuration>
                     <mainClass>edu.ccsu.cs492.kerberoschat.KerberosChatApplication</mainClass>
                     <layout>JAR</layout>
-                    <excludes>
-                        <exclude>**/src/main/java/web-app/node_modules/*</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
